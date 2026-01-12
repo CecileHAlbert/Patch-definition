@@ -18,7 +18,7 @@ library("rstudioapi")
 ### import functions
 source("fct_dilatation_erosion.R")
 source("fct_tesselation_and_cutting.R")
-source("ct_situation_report_patches.R")
+source("fct_situation_report_patches.R")
 source("fct_patchs_analysis.R")
 source("fct_patch_cut_proc.R")
 
@@ -26,7 +26,7 @@ source("fct_patch_cut_proc.R")
 #### PREPARE DATA AND SET UP PARAMETERS
 ######################################################################################################################
 
-### Prepare habitat map // IF NEEDED // Example with a threrholded layer of forest cover density, to map habitat for the European red squirrel
+### Prepare habitat map // IF NEEDED // Example with a thresholded layer of forest cover density, to map habitat for the European red squirrel
 habitat_threshold = 30
 treecoverdensity = rast("inputs/forest_density100.tif")
 treecoverdensity_th = treecoverdensity>habitat_threshold
@@ -49,7 +49,7 @@ River = vect("inputs/rivers.shp")
 ListFragmentingElements = list(Road, River)
 
 ### OPTIONAL STEP - Perform a DILATATION EROSION on habitat map, to remove the small gaps and spurs
-# Do you want to perform a dilatation-erosion step? If yes, set TRUE. This additional step allows to fill smal gaps in habitat
+# Do you want to perform a dilatation-erosion step? If yes, set TRUE. This additional step allows to fill small gaps in habitat
 # Default value is FALSE
 DilatationErosionChoice = F # TRUE
 # Set here the threshold value for dilatation - erosion, ie the maximum distance from habitat to be dilated (m)
@@ -60,7 +60,7 @@ DilatationThreshold = 100 #m
 ### Set up DESIRED PATCHE SIZE RANGE   
 # Set here the minimum and maximum threshold for patch definition, ie the minimum area
 # for a habitat area to be considered as a patch (smaller areas can be considered as 
-# stepping stones) - example here given fot the European red squirrel
+# stepping stones) - example here given for the European red squirrel
 MiniArea = 22500*1 #m²
 MaxiArea = 125000*1 #m²
 
@@ -118,12 +118,12 @@ Tol = 5
 DistanceToGoal = 0.1
 
 ### FIND THE RIGHT NB OF POINTS TO DRAW
-# Percent of patches within the desired range will form a bell-shape with increasing number of points, first increasing, then decresing after having reached a maximum
+# Percent of patches within the desired range will form a bell-shape with increasing number of points, first increasing, then decreasing after having reached a maximum
 # bounds_min and bounds_max are to be played with to ensure the full range of option is tested around what could be a first approximation: mean_patch_size_of_too_large_patches/mean_wanted_patch_size
 # if percent of correctly ranked patches is only increasing (increase bounds_max), if it only decreases, (decrease bounds_min), otherwise test a large range: 0.1 - 4 for instance
 # bounds_min cannot be too small, otherwise the number of points to be drawn will be 0 (the function corrects for that)
 # bounds_min cannot be too large, otherwise the range explored will be too large and the optimum might be missed, a warning is returned if the number of points to be drawn exceeds 
-# the number of availables pixels
+# the number of available pixels
 # this choice may depend on Type, bounds_max can be larger for "regular" than "random" 
  
 # length.out defines on which first sets of points number the percentage of patches (once cut) that fall within
@@ -132,7 +132,7 @@ DistanceToGoal = 0.1
 
 # rep defines how many times the procedure should be repeated (drawing N points, cutting, and assessing percent of patch that fall within
 # the desired path size range) for each points number. This process includes some stochasticity, so each repetition will be a bit different, 
-# and increasing rep will help see this potential varaibility. Yet, increasing rep will also lead to higher calculatio time; default is 1
+# and increasing rep will help see this potential variability. Yet, increasing rep will also lead to higher calculation time; default is 1
 
 ## USE THE FUNCTION
 NbOpt = find_random_nb_opt_based_on_range(too_large_p = TooLargePatches,
@@ -186,3 +186,4 @@ CostLayer = CostLayer/TooSmallPatchesRec
 writeRaster(CostLayer, "cost_layer.tif", overwrite=TRUE)
 
  
+
