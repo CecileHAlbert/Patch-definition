@@ -41,7 +41,7 @@ patchs_cutting_all = function(r, n, id=0, type=c("random","regular")){
 #-------------------------------------------------------------------------------
 
 # TO TRANSFORM THE TESSELATION OUTPUT IN A VECTOR
-# Function developped by Samuel Ackerman : https://rdrr.io/cran/animalEKF/src/R/tess2spat.r
+# Function developed by Samuel Ackerman : https://rdrr.io/cran/animalEKF/src/R/tess2spat.r
 
 # PARAMETERS
 # obj = voronoi tesselation object, created with "deldir" function
@@ -188,4 +188,5 @@ find_random_nb_opt_based_on_range = function(too_large_p, mini_area, maxi_area, 
   #print(paste("Optimal N is ",round(nb_opt,0)))
   return(round(nb_opt,0))
 }
+
 
