@@ -12,7 +12,7 @@
 ## WARNING, areas that are no habitat must be NA, and others 1 or a patch number
 # nb_opt = number of points to be drawn, can come from a search of the optimal number of points with find_random_nb_opt_based_on_range
 # type = c("random","regular"), random or regular selection to perform the tesselation
-# optimal = type of search, the deault is "range"
+# optimal = type of search, the default is "range"
 # tol = the accuracy wanted when searching for the optimal number of points to be drawn
 # distance_to_goal = define how close the optimal needs to be from the goal if optimal == "goal" 
 # nb_colors_wanted = number of colours to deplay maps, default is set to 12
@@ -47,3 +47,4 @@ patch_cut_proc = function(too_large_p, correct_p, nb_opt, type=c("random","regul
   ##Save the new file
   writeRaster(x = out_mos2, filename = "final_patches.tif",overwrite=TRUE)
 }
+
