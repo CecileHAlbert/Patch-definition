@@ -15,13 +15,13 @@ dilatation_erosion <- function(r,threshold){
     ### Replace 0 (ie matrix) with NA 
     r[r[[1]]== 0] = NA
     
-    ### Calcule distance to habitat areas
+    ### Calculate distance to habitat areas
     distances = terra::distance(r)
     
     ### distance-to-habitat thresholding (cells nb)
     distances_hab = distances>threshold
     
-    ### Replace 0 (ie distance-to-habitat < threshold ) with en NA
+    ### Replace 0 (ie distance-to-habitat < threshold ) by NAs
     distances_hab[distances_hab[[1]]== 0] <- NA
     
     ### Calculating distance to non-habitat
@@ -33,3 +33,4 @@ dilatation_erosion <- function(r,threshold){
     return(final_rast)
 
 }
+
