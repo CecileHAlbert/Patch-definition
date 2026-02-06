@@ -22,7 +22,7 @@ situation_report_patches <- function(habitat_layer, list_fragmenting_elements=li
                       dilatation_erosion_choice=FALSE,dilatation_threshold=NULL,
                       mini_area,maxi_area,nb_colors_wanted=12,display=TRUE,log_scale=F) {
   
-  #source("functions/fct_patchs_analysis.R")
+  #source("functions/fct_patch_analysis.R")
   #source("functions/fct_dilatation_erosion.R")
   
   ## HABITAT LAYER
@@ -112,7 +112,7 @@ situation_report_patches <- function(habitat_layer, list_fragmenting_elements=li
     
     # CHECKING RESULTS : 
     print("Here are some statistics on the current definition of your patches")
-    stats_patchs(r=patch,mini_area=mini_area,maxi_area=maxi_area)
+    stats_patch(r=patch,mini_area=mini_area,maxi_area=maxi_area)
     plot_histo(patch,log_scale=log_scale)
     if(!log_scale)abline(v = mini_area, col = 'red', lwd = 2, lty = 'dashed')
     if(!log_scale)abline(v = maxi_area, col = 'red', lwd = 2, lty = 'dashed')
@@ -144,32 +144,33 @@ situation_report_patches <- function(habitat_layer, list_fragmenting_elements=li
     ## B) Extract correct-size patches, i.e patches that don't need cutting
     
     # select patches between the minimum and maximum surface areas
-    patchs_larger_mini = ifel(patch_area < mini_area, NA, patch)
-    correct_size_patchs = ifel(patch_area > maxi_area, NA, patchs_larger_mini)
+    patch_larger_mini = ifel(patch_area < mini_area, NA, patch)
+    correct_size_patch = ifel(patch_area > maxi_area, NA, patch_larger_mini)
     if (display == TRUE){ 
       x11() 
-      plot(correct_size_patchs,col = COL,
+      plot(correct_size_patch,col = COL,
            main = paste("Patches between mini_area and maxi_area - ",mini_area,"and",maxi_area,"m2"))
     }
     # # Save as a new raster the set of patches of the correct size
-    writeRaster(x = correct_size_patchs, filename = "patches_correct_size.tif",overwrite=TRUE)
+    writeRaster(x = correct_size_patch, filename = "patches_correct_size.tif",overwrite=TRUE)
     
     
     ## C) Extract too-large patches, i.e patches that need cutting
     
     # Select patches over the maximum surface area
-    large_patchs = ifel(patch_area < maxi_area, NA, patch)
+    large_patch = ifel(patch_area < maxi_area, NA, patch)
     if (display == TRUE){
       x11() 
-      plot(large_patchs,col = COL,
+      plot(large_patch,col = COL,
            main = paste("Patches larger than maxi_area -",maxi_area,"m2"))
     }
     
     # Save as a new raster the large patches that are too large and need to be cut
-    writeRaster(x = large_patchs, filename = "patches_too_large.tif",overwrite=TRUE)
+    writeRaster(x = large_patch, filename = "patches_too_large.tif",overwrite=TRUE)
     
   } else {
       print("Your habitat layer raster does not have the right format. It has to be in binary format 0/1 (0=matrix ; 1=habitat)") # DEBUG HABITAT LAYER FORMAT
   }
 }
+
 
