@@ -3,20 +3,20 @@
 # Queru et al. Better modelling habitat patches // Project ERC SCALED - 949812
 
 ############################################################################################
-# SET OF FUNCTIONS TO PERFORM THE VARIOUS STEPS REGARDING TESSELATION AND PATCH CUTTING
+# SET OF FUNCTIONS TO PERFORM THE VARIOUS STEPS REGARDING TESSELLATION AND PATCH CUTTING
 
 #-------------------------------------------------------------------------------
 
-# FUNCTION TO REALIZE THE ENTIRE PROCEDURE OF TESSELATION AND PATCH CUTTING
+# FUNCTION TO REALIZE THE ENTIRE PROCEDURE OF TESSELLATION AND PATCH CUTTING
 
 ## PARAMETERS 
 # r = large-patch raster (layer of the patches that are oversized and need to be cut)), in which the tessellation will be performed 
-## WARNING, areas that are no habitat must be NA, and others 1 or a patch number
+## WARNING, in these rasters areas that are not habitat must be coded as NA, others as 1 or as an integer >0 coding for patch "id"
 # n = number of points to be drawn
-# id = last known patch id from the raster layers with patches that are within the good range of size, default is 0, no other patches will be included
+# id = last known patch id from the raster layers with patches that are within the good range of size, default is 0 (o avoid giving twice the same name to patches)
 # type = c("random","regular")
 
-patchs_cutting_all = function(r, n, id=0, type=c("random","regular")){
+patch_cutting_all = function(r, n, id=0, type=c("random","regular")){
   
   r2 = as(r, "Raster")
   
@@ -26,25 +26,25 @@ patchs_cutting_all = function(r, n, id=0, type=c("random","regular")){
                          as.raster=FALSE, as.df=FALSE, as.points=FALSE, values=FALSE, cells=FALSE, 
                          xy=TRUE, ext=NULL, warn=TRUE, weights=NULL, exp=5, exhaustive=FALSE)
 
-  # Perform tesselation
+  # Perform tessellation
   x = point[,1]
   y = point[,2]
-  tesselation = tessel(x, y)
+  tessellation = tessel(x, y)
   
-  # New patchs definition
-  new_patchs = patchs_cutting(r=r,tess=tesselation,id=id)
+  # New patch delimitation 
+  new_patch = patch_cutting(r=r,tess=tessellation,id=id)
   
-  return(new_patchs)
+  return(new_patch)
 }
 
 
 #-------------------------------------------------------------------------------
 
-# TO TRANSFORM THE TESSELATION OUTPUT IN A VECTOR
+# TO TRANSFORM THE TESSELLATION OUTPUT INTO A VECTOR
 # Function developed by Samuel Ackerman : https://rdrr.io/cran/animalEKF/src/R/tess2spat.r
 
 # PARAMETERS
-# obj = voronoi tesselation object, created with "deldir" function
+# obj = voronoi tessellation object, created with "deldir" function
 # idvec = vector of id for polygons
 tess2spat <- function(obj,idvec=NULL) {
   K <- nrow(obj$summary)
@@ -65,7 +65,7 @@ tess2spat <- function(obj,idvec=NULL) {
 
 # ------------------------------------------------------------------------------
 
-# PERFORM A TESSELATION FROM POINTS AND CONVERT FOR TERRA
+# PERFORM A TESSELLATION FROM POINTS AND CONVERT FOR TERRA
 
 ## PARAMETERS 
 # x, y = coordinates of points
@@ -76,28 +76,28 @@ tessel <- function(x,y){
      t = deldir::deldir(x, y)
      
      # convert for use in terra
-     tesselation_polygons = as(tess2spat(t,idvec=NULL),"SpatialPolygonsDataFrame")
-     tesselation_polygons_vect = vect(tesselation_polygons)
+     tessellation_polygons = as(tess2spat(t,idvec=NULL),"SpatialPolygonsDataFrame")
+     tessellation_polygons_vect = vect(tessellation_polygons)
      
-     return(tesselation_polygons_vect)
+     return(tessellation_polygons_vect)
 }
 
 # ------------------------------------------------------------------------------
 
-# CUTTING OF PATCHES ACCORDING TO TESSELATION POLYGONS
+# CUTTING OF PATCHES ACCORDING TO TESSELLATION POLYGONS
 
 ## PARAMETERS  
-# r = large patch raster, in which the tessellation will be performed
-# t = voronoi tesselation object, created with "deldir" function
-# i = last known patchs id, default is 0, no other patch to be included
+# r = oersized patch raster, in which the tessellation will be performed
+# t = voronoi tessellation object, created with "deldir" function
+# i = last known patch id, default is 0, no other patch to be included (to prevent giving twice the same patch ID)
 
-patchs_cutting <- function(r,tess,id=0) {
+patch_cutting <- function(r,tess,id=0) {
 
-  # Polygons of tesselation definition
+  # Polygons of tessellation definition
   
   r[r > 0] <- 1
   
-  # Cutting patches according to tesselation polygons
+  # Cutting patches according to tessellation polygons
   tess[,1] = (id+1):(nrow(data.frame(tess))+id)
   names(tess)[1]="id"
   
@@ -113,20 +113,20 @@ patchs_cutting <- function(r,tess,id=0) {
 
 # FUNCTION TO FIND THE OPTIMAL NUMBER OF POINTS TO BE DRAWN
 # BASED ON MAXIMIZING THE NUMBER OF PATCHES IN THE DESIRED SIZE RANGE
-# the percentage of patches falling within the desired range is calculated a number of time (length.out) for different number of points (wide range)
+# the percentage of patches falling within the desired range is calculated a number of times (length.out) for different numbers of points (wide range)
 # then a ternary search if performed to find the optimum
 
 ## PARAMETERS : 
 # too_large_p = large-patch raster (layer of the patches that are oversized and need to be cut)), in which the tessellation will be performed 
-## WARNING, areas that are no habitat must be NA, and others 1 or a patch number
+## WARNING, in these rasters, areas that are not habitat must be coded as NA, and others as 1 or an integer >0 coding for patch id
 # mini_area / maxi_area = minimum and maximum bounds for desired patch size range
-# type = c("random", "regular") for how points are drawn to perform the tesselation
-# tol = default is 10, the tolerated error for the optimal search, i.e. when the search stops, when left and right search bounds are closer than tol. A measurement of accuracy, lower numbers means a longer and more accurate search, minimum possible is 1 
-# bounds_min / bounds_max : min and max bounds of point numbers, range within which we search with a ternary search procedure for he optimum number of points, 
-# i.e. the one that maximizes the number of patches (derived from points with a tesselation) which size falls within the desired range
+# type = c("random", "regular") for how points are drawn to perform the tessellation
+# tol = default is 10, the tolerated error for the optimal search, i.e. when the search stops, when left and right search bounds are closer than tol. A measurement of accuracy, lower numbers mean a longer and more accurate search, minimum possible is 1 
+# bounds_min / bounds_max : min and max bounds of point numbers, =range within which we search with a ternary search procedure for the optimum number of points, 
+# i.e. the one that maximizes the number of patches (derived from points with a tessellation) which size falls within the desired range
 # the default is bounds_min = 0.1, bounds_max=4, this means we will search for the optimum number of points between 0.1*theoretical number of points and  4* number of points
-# length.out: number of points numbers for which the desired size range is calculated to search for the optimum - numbers of points are along a regular sequence between bounds_min*theoretical_number and bounds_max*theoretical_number, default is length.out = 10, it should be an integer. Note that increasing length.out will increase the accuracy of the search, but will also increase calculation time 
-# rep: number of time the cutting and assessment is repeated for each element of the sequence (with length = length.out), default is repet = 1, it should be an integer, increasing this value will increase calculation time, but ~10 reps may help see if the process if variable or not 
+# length.out: number of points for which the desired size range is calculated to search for the optimum - numbers of points are along a regular sequence between bounds_min*theoretical_number and bounds_max*theoretical_number, default is length.out = 10, it should be an integer. Note that increasing length.out will increase the accuracy of the search, but will also increase calculation time 
+# rep: number of times the cutting and assessment is repeated for each element of the sequence (with length = length.out), default is repet = 1, it should be an integer, increasing this value will increase calculation time, but ~10 reps may help see if the process if variable or not 
 
 find_random_nb_opt_based_on_range = function(too_large_p, mini_area, maxi_area, type=c("random", "regular"), tol = 10, bounds_min=0.1, bounds_max=4, length.out=10, repet = 1){
   
@@ -137,7 +137,7 @@ find_random_nb_opt_based_on_range = function(too_large_p, mini_area, maxi_area, 
   ## set up a rough theoretical number of points that should be drawn (~mean patch size/expected mean patch size)
   theoretical_number = ceiling(mean_patch_size/mean(c(mini_area,maxi_area)))*nrow(freq_large)
   
-  ## define in what range of patch number we need to search for the optimal > i.e. calculate the percentage of correctly sized patches for different number of points
+  ## define in what range of patch number we need to search for the optimal > i.e. calculate the percentage of correctly sized patches for different numbers of points
   left_search = round(theoretical_number * bounds_min,0) 
   right_search = round(theoretical_number * bounds_max,0)
   N = round(seq(left_search, right_search, length.out=length.out),0)
@@ -155,7 +155,7 @@ find_random_nb_opt_based_on_range = function(too_large_p, mini_area, maxi_area, 
   k = 1
   for(ni in N){
     for(j in 1:ncol(N_out)){
-      temp = assess_patch_size(patchs_cutting_all(too_large_p,n=ni,id=0,type=type), mini_area=mini_area, maxi_area=maxi_area)[[1]]
+      temp = assess_patch_size(patch_cutting_all(too_large_p,n=ni,id=0,type=type), mini_area=mini_area, maxi_area=maxi_area)[[1]]
       N_out[k,j] = temp[2]/sum(temp) 
     }
     k = k+1
@@ -185,8 +185,9 @@ find_random_nb_opt_based_on_range = function(too_large_p, mini_area, maxi_area, 
   
   nb_opt = (left_search_new+right_search_new)/2 
   abline(v=nb_opt)
-  #print(paste("Optimal N is ",round(nb_opt,0)))
+  #print(paste("The optimal number of points to draw for delimiting patches in you desired range of sizes is ",round(nb_opt,0)))
   return(round(nb_opt,0))
 }
+
 
 
