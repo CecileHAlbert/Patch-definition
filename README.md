@@ -1,5 +1,5 @@
 # Patch-definition
-Code to cut to prepare a patch layer for ecological modelling, while accounting for the biology of study organisms. After the manuscript: "Better defining habitat patches to improve spatially explicit modelling outputs Running title: Better modelling habitat patches"
+Code to prepare biologically-meaning patch layers for ecological modeling, based on an initial habitat layer. For the manuscript: "Better defining habitat patches to improve spatially explicit modelling outputs Running title: Better modelling habitat patches"
 
 This project contains three types of files: 
 1- inputs.zip provides the example data, for which main code is applied, for you to test and understand how it works
