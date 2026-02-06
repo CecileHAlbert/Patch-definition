@@ -4,10 +4,10 @@
 
 ############################################################################################
 
-# FUNCTION TO SUMMERIZE THE CLASSIFICATION OF PATCHES BY SIZE
+# FUNCTION TO SUMMARIZE THE CLASSIFICATION OF PATCHES BY SIZE
 ## PARAMETERS : 
 # r = patch raster, in which the tessellation will be performed
-# mini_area / maxi_area = minimum and maximum bounds for patch size range
+# mini_area / maxi_area = minimum and maximum bounds for desired patch size range
 assess_patch_size = function(r, mini_area, maxi_area){
   freq_val = terra::freq(r)
   cell_size = res(r)[1]*res(r)[2]
@@ -17,9 +17,9 @@ assess_patch_size = function(r, mini_area, maxi_area){
   return(list(stats_area_patch))
 } 
 
-# FUNCTION TO CALCULATE THE NUMBER OF PATCHES, MEAN AND MEDIAN PATCH SIZE + PLOT PIE 
+# FUNCTION TO CALCULATE THE NUMBER OF PATCHES, MEAN AND MEDIAN PATCH SIZE + PLOT A PIE CHART OF PATCH SIZE CLASSES 
 ## PARAMETERS : 
-# r = patch raster, each patch has one id, and matrix is considered as 0
+# r = patch raster, each patch has a unique id (integer > 0), and matrix pixels are coded as 0
 # mini_area / maxi_area = minimum and maximum bounds for patch size range
 stats_patchs <- function(r,mini_area,maxi_area) {
   freq_patchs = terra::freq(r)
@@ -52,9 +52,9 @@ stats_patchs <- function(r,mini_area,maxi_area) {
 }
 
 
-# FUNCTION TO PLOT PATCHS SIZE HISTOGRAMME
+# FUNCTION TO PLOT AN HISTOGRAM OF PATCHS SIZES
 ## PARAMETERS : 
-# r = patch raster, each patch has one id, and matrix is considered as 0
+# r = patch raster, each patch has a unique id (integer > 0), and matrix pixels are coded as 0
 # log_scale = default is F, can be T if to plot in log scale
 plot_histo <- function(r,log_scale=F) {
   cell_size = res(r)[1] * res(r)[1]
@@ -74,3 +74,4 @@ plot_histo <- function(r,log_scale=F) {
        main = "Histogram of patches area in the landscape")
   } 
 }
+
