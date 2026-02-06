@@ -25,27 +25,28 @@ patch_cut_proc = function(too_large_p, correct_p, nb_opt, type=c("random","regul
   # Assign new id to correct patches
   temp = terra::freq(correct_p)
   rcl = data.frame(from = temp[,2], to = 1:nrow(temp))
-  correct_patchs = classify(correct_p,rcl)
-  id_max = minmax(correct_patchs, compute=TRUE)[2]
+  correct_patch = classify(correct_p,rcl)
+  id_max = minmax(correct_patch, compute=TRUE)[2]
   COL = brewer.pal(n = nb_colors_wanted, name = "Set3")[rep(sample(1:nb_colors_wanted,nb_colors_wanted,replace=F),ceiling(id_max/nb_colors_wanted))] 
   
   # Cut too large patches into smaller patches
-  out_cut = patchs_cutting_all(r=too_large_p,n=nb_opt,id=id_max,type="random")
+  out_cut = patch_cutting_all(r=too_large_p,n=nb_opt,id=id_max,type="random")
 
   # Add back habitat that could have been lost during tessellation
   #id_max2 = minmax(out_cut, compute=TRUE)[2]
-  #large_patchs_no_id = mask(too_large_p,out_cut, inverse=TRUE)
-  #large_patchs_no_id = patches(large_patchs_no_id,directions = 8)#, zeroAsNA=TRUE, allowGaps=FALSE)
-  #large_patchs_no_id = large_patchs_no_id + id_max2
-  #plot(large_patchs_no_id)
+  #large_patch_no_id = mask(too_large_p,out_cut, inverse=TRUE)
+  #large_patch_no_id = patches(large_patch_no_id,directions = 8)#, zeroAsNA=TRUE, allowGaps=FALSE)
+  #large_patch_no_id = large_patch_no_id + id_max2
+  #plot(large_patch_no_id)
 
   # Group cut and correct patches into the same layer
-  out_mos = mosaic(out_cut, large_patchs_no_id)
-  out_mos2 = mosaic(out_mos, correct_patchs)
+  out_mos = mosaic(out_cut, large_patch_no_id)
+  out_mos2 = mosaic(out_mos, correct_patch)
   plot(out_mos2,col = COL)
   
   ##Save the new file
   writeRaster(x = out_mos2, filename = "final_patches.tif",overwrite=TRUE)
 }
+
 
 
