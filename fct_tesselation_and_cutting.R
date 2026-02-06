@@ -173,7 +173,7 @@ find_random_nb_opt_based_on_range = function(too_large_p, mini_area, maxi_area, 
     N = c(left_search_new+(right_search_new-left_search_new)/5,right_search_new-(right_search_new-left_search_new)/5)
     N_out = NULL 
     for(ni in N){
-      temp = assess_patch_size(patchs_cutting_all(too_large_p,n=ni,id=0,type=type), mini_area=mini_area, maxi_area=maxi_area)[[1]]
+      temp = assess_patch_size(patch_cutting_all(too_large_p,n=ni,id=0,type=type), mini_area=mini_area, maxi_area=maxi_area)[[1]]
       N_out =c(N_out,temp[2]/sum(temp))
     }
     points(N,N_out,col=k,cex=2,pch=20)
@@ -188,6 +188,7 @@ find_random_nb_opt_based_on_range = function(too_large_p, mini_area, maxi_area, 
   #print(paste("The optimal number of points to draw for delimiting patches in you desired range of sizes is ",round(nb_opt,0)))
   return(round(nb_opt,0))
 }
+
 
 
 
