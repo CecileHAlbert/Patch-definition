@@ -40,13 +40,14 @@ patch_cut_proc = function(too_large_p, correct_p, nb_opt, type=c("random","regul
   #plot(large_patch_no_id)
 
   # Group cut and correct patches into the same layer
-  out_mos = mosaic(out_cut, large_patch_no_id)
-  out_mos2 = mosaic(out_mos, correct_patch)
+  #out_mos = mosaic(out_cut, large_patch_no_id)
+  out_mos2 = mosaic(out_cut, correct_patch)
   plot(out_mos2,col = COL)
   
   ##Save the new file
   writeRaster(x = out_mos2, filename = "final_patches.tif",overwrite=TRUE)
 }
+
 
 
 
