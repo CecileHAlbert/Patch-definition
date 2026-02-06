@@ -4,11 +4,11 @@
 
 ############################################################################################
 
-# FUNCTION TO PERFORM THE DILATATION - EROSION STEP, MEANING FILLING SMALL GAPS IN HABITAT AREAS
+# FUNCTION TO PERFORM THE DILATATION - EROSION STEP, MEANING FILLING SMALL GAPS WITHIN HABITAT AREAS
 
-## PARAMETERS REQUIRED: 
+## REQUIRED PARAMETERS : 
 # r = raster of habitat layer in binary format 0/1 (0=matrix ; 1=habitat)
-# threshold = dilatation - erosion threshold
+# threshold = size (in m) of the maximum gap size allowed to perform the dilation-erosion
 
 dilatation_erosion <- function(r,threshold){
 
@@ -18,7 +18,7 @@ dilatation_erosion <- function(r,threshold){
     ### Calculate distance to habitat areas
     distances = terra::distance(r)
     
-    ### distance-to-habitat thresholding (cells nb)
+    ### distance-to-habitat thresholding (cell nb)
     distances_hab = distances>threshold
     
     ### Replace 0 (ie distance-to-habitat < threshold ) by NAs
@@ -27,10 +27,11 @@ dilatation_erosion <- function(r,threshold){
     ### Calculating distance to non-habitat
     distances_non_habitat = terra::distance(distances_hab)
     
-    ### distance-to-habitat thresholding (cells nb)
+    ### distance-to-habitat thresholding (cell nb)
     final_rast = as.numeric(distances_non_habitat>threshold)
     
     return(final_rast)
 
 }
+
 
