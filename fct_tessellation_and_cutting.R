@@ -26,11 +26,15 @@ patch_cutting_all = function(r, n, id=0, type=c("random","regular")){
                          as.raster=FALSE, as.df=FALSE, as.points=FALSE, values=FALSE, cells=FALSE, 
                          xy=TRUE, ext=NULL, warn=TRUE, weights=NULL, exp=5, exhaustive=FALSE)
 
+  # Get the raster extent
+  r_extent = ext(r)  # terra function to get extent
+  
   # Perform tessellation
   x = point[,1]
   y = point[,2]
-  tessellation = tessel(x, y)
-  
+  # Pass extent to tessel function
+  tesselation = tessel(x, y, raster_extent = r_extent)
+
   # New patch delimitation 
   new_patch = patch_cutting(r=r,tess=tessellation,id=id)
   
@@ -188,6 +192,7 @@ find_random_nb_opt_based_on_range = function(too_large_p, mini_area, maxi_area, 
   #print(paste("The optimal number of points to draw for delimiting patches in you desired range of sizes is ",round(nb_opt,0)))
   return(round(nb_opt,0))
 }
+
 
 
 
