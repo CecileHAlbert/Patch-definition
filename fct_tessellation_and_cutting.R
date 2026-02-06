@@ -74,16 +74,24 @@ tess2spat <- function(obj,idvec=NULL) {
 ## PARAMETERS 
 # x, y = coordinates of points
 
-tessel <- function(x,y){
-     
-     # create a delaunay triangulation from points
-     t = deldir::deldir(x, y)
-     
-     # convert for use in terra
-     tessellation_polygons = as(tess2spat(t,idvec=NULL),"SpatialPolygonsDataFrame")
-     tessellation_polygons_vect = vect(tessellation_polygons)
-     
-     return(tessellation_polygons_vect)
+tessel <- function(x, y, raster_extent = NULL){
+  
+  # create a delaunay triangulation from points
+  if(!is.null(raster_extent)){
+    # Use the raster extent as bounding box
+    rw = c(raster_extent$xmin, raster_extent$xmax,
+           raster_extent$ymin, raster_extent$ymax)
+    t = deldir::deldir(x, y, rw = rw)
+  } else {
+    # Auto-calculate from points (original behavior)
+    t = deldir::deldir(x, y)
+  }
+  
+  # convert for use in terra
+  tessellation_polygons = as(tess2spat(t, idvec=NULL), "SpatialPolygonsDataFrame")
+  tessellation_polygons_vect = vect(tessellation_polygons)
+  
+  return(tessellation_polygons_vect)
 }
 
 # ------------------------------------------------------------------------------
@@ -192,6 +200,7 @@ find_random_nb_opt_based_on_range = function(too_large_p, mini_area, maxi_area, 
   #print(paste("The optimal number of points to draw for delimiting patches in you desired range of sizes is ",round(nb_opt,0)))
   return(round(nb_opt,0))
 }
+
 
 
 
