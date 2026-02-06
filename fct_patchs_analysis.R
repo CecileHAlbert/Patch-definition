@@ -21,26 +21,26 @@ assess_patch_size = function(r, mini_area, maxi_area){
 ## PARAMETERS : 
 # r = patch raster, each patch has a unique id (integer > 0), and matrix pixels are coded as 0
 # mini_area / maxi_area = minimum and maximum bounds for patch size range
-stats_patchs <- function(r,mini_area,maxi_area) {
-  freq_patchs = terra::freq(r)
+stats_patch <- function(r,mini_area,maxi_area) {
+  freq_patch = terra::freq(r)
   cell_size = res(r)[1]*res(r)[2]
-  nb_patchs = nrow(freq_patchs)
-  print(paste(nb_patchs,"patchs",sep=" "))
+  nb_patch = nrow(freq_patch)
+  print(paste(nb_patch,"patches",sep=" "))
   
-  area_km2 = round(mean(freq_patchs$count/100),2)
+  area_km2 = round(mean(freq_patch$count/100),2)
   print(paste("Mean area (km²) :", area_km2,sep=" "))
   
   area_ha = paste(area_km2*100)
   print(paste("Mean area (ha) :", area_ha,sep=" "))
   
-  area_km2_bis = median(freq_patchs$count/100)
+  area_km2_bis = median(freq_patch$count/100)
   print(paste("Median area (km²) :", area_km2_bis,sep=" "))
   
-  area_ha_bis = median(freq_patchs$count)
+  area_ha_bis = median(freq_patch$count)
   print(paste("Median area (ha) :", area_ha_bis,sep=" "))
   
   #Calculate the percentage of each patch category: too small, correct-size and too large
-  group_area_patch = cut(freq_patchs$count*cell_size,c(0,mini_area,maxi_area,Inf),labels=c('too small','CORRECT SIZE','too large'))
+  group_area_patch = cut(freq_patch$count*cell_size,c(0,mini_area,maxi_area,Inf),labels=c('too small','CORRECT SIZE','too large'))
   stats_area_patch = table(group_area_patch)
   
   lbls = c('too small','CORRECT SIZE','too large')
@@ -58,20 +58,21 @@ stats_patchs <- function(r,mini_area,maxi_area) {
 # log_scale = default is F, can be T if to plot in log scale
 plot_histo <- function(r,log_scale=F) {
   cell_size = res(r)[1] * res(r)[1]
-  freq_patchs = freq(r)
-  area_patchs=data.frame("areaCells"= freq_patchs$count,"aream2"=freq_patchs$count*cell_size)
+  freq_patch = freq(r)
+  area_patch = data.frame("areaCells"= freq_patch$count,"aream2"=freq_patch$count*cell_size)
   par(mfrow=c(1,1))
   if(!log_scale){
-  hist(area_patchs$aream2,
+  hist(area_patch$aream2,
        xlab = "Area (m²)",
-       ylab="Nb patchs",
+       ylab="Patch nb.",
        main = "Histogram of patches area in the landscape")
   }
   if(log_scale){
-  hist(log10(area_patchs$aream2),
+  hist(log10(area_patch$aream2),
        xlab = "log10(Area (m²))",
-       ylab="Nb patchs",
+       ylab="Patch nb.",
        main = "Histogram of patches area in the landscape")
   } 
 }
+
 
