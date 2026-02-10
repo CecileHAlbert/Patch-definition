@@ -115,8 +115,12 @@ patch_cutting <- function(r,tess,id=0) {
   
   patch_raster = rasterize(tess, r*0, field = "id")
   r2 = patch_raster*r
-  
-  return(r2)
+  r2_vect = as.polygons(r2)
+  r2_vect_dis = disagg(r2_vect)
+  r2_vect_dis$id = (id+1):(id+length(r2_vect_dis$id))
+  r3 = rasterize(r2_vect_dis, r*0, field = "id")
+  #plot(r3,col=1:length(r2_vect_dis$id))
+  return(r3)
 }
 
 
@@ -200,6 +204,7 @@ find_random_nb_opt_based_on_range = function(too_large_p, mini_area, maxi_area, 
   #print(paste("The optimal number of points to draw for delimiting patches in you desired range of sizes is ",round(nb_opt,0)))
   return(round(nb_opt,0))
 }
+
 
 
 
