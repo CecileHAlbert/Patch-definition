@@ -24,9 +24,12 @@ patch_cut_proc = function(too_large_p, correct_p, nb_opt, type=c("random","regul
                      
   # Assign new id to correct patches
   temp = terra::freq(correct_p)
-  rcl = data.frame(from = temp[,2], to = 1:nrow(temp))
-  correct_patch = classify(correct_p,rcl)
-  id_max = minmax(correct_patch, compute=TRUE)[2]
+  if(nrow(temp)>0){
+   rcl = data.frame(from = temp[,2], to = 1:nrow(temp))
+   correct_patch = classify(correct_p,rcl) 
+   id_max = minmax(correct_patch, compute=TRUE)[2]
+  }
+  if(nrow(temp)==0)id_max=0
   COL = brewer.pal(n = nb_colors_wanted, name = "Set3")[rep(sample(1:nb_colors_wanted,nb_colors_wanted,replace=F),ceiling(id_max/nb_colors_wanted))] 
   
   # Cut too large patches into smaller patches
@@ -47,6 +50,7 @@ patch_cut_proc = function(too_large_p, correct_p, nb_opt, type=c("random","regul
   ##Save the new file
   writeRaster(x = out_mos2, filename = "final_patches.tif",overwrite=TRUE)
 }
+
 
 
 
