@@ -14,7 +14,7 @@
 # dilatation_erosion_choice = default F, set T if to simplify habitat layer with a dilatation erosion procedure
 # dilatation_threshold = default is NULL, put a reasonable distance threshold for the dilatation erosion procedure 
 # mini_area,maxi_area = desired patch size range
-# nb_colors_wanted = number of colours to display habitat patches in the maps, default is set to 12
+# nb_colors_wanted = number of colours to deplay maps, default is set to 12
 # display = TRUE
 # log_scale = F, set to T to display histogram f patch size in a log scale
 
@@ -22,7 +22,7 @@ situation_report_patches <- function(habitat_layer, list_fragmenting_elements=li
                       dilatation_erosion_choice=FALSE,dilatation_threshold=NULL,
                       mini_area,maxi_area,nb_colors_wanted=12,display=TRUE,log_scale=F) {
   
-  #source("functions/fct_patch_analysis.R")
+  #source("functions/fct_patchs_analysis.R")
   #source("functions/fct_dilatation_erosion.R")
   
   ## HABITAT LAYER
@@ -96,9 +96,9 @@ situation_report_patches <- function(habitat_layer, list_fragmenting_elements=li
     
     
     
-    ## PATCH DEFINITION - "REGION GROUP" the habitat layer and sort resulting patches into 3 CATEGORIES
+    ## PATCHES DEFINITION - REGION GROUP + ZONE SORTING IN 3 CATEGORIES
     
-    # Patch definition = contiguous sets of habitat cells
+    # Patches definition = continuous sets oh habitat cells
     patch = patches(habitat_layer_with_fragm_elem,directions = 8, zeroAsNA=TRUE, allowGaps=FALSE)
     
     maxcol = minmax(patch)[2]
@@ -112,7 +112,7 @@ situation_report_patches <- function(habitat_layer, list_fragmenting_elements=li
     
     # CHECKING RESULTS : 
     print("Here are some statistics on the current definition of your patches")
-    stats_patch(r=patch,mini_area=mini_area,maxi_area=maxi_area)
+    stats_patchs(r=patch,mini_area=mini_area,maxi_area=maxi_area)
     plot_histo(patch,log_scale=log_scale)
     if(!log_scale)abline(v = mini_area, col = 'red', lwd = 2, lty = 'dashed')
     if(!log_scale)abline(v = maxi_area, col = 'red', lwd = 2, lty = 'dashed')
@@ -138,39 +138,38 @@ situation_report_patches <- function(habitat_layer, list_fragmenting_elements=li
     # Remove ID since they are no longer patches
     small_patches[small_patches > 0] <- 1
     
-    # Save as a new rasyer the set of patches removed because they are too small
-    writeRaster(x = small_patches, filename = "patches_too_small.tif",overwrite=TRUE)
+    # Save the patches removed because they are too small as a new file
+    writeRaster(x = small_patches, filename = paste0("patches_too_small_", Landscape,".tif"),overwrite=TRUE)
  
     ## B) Extract correct-size patches, i.e patches that don't need cutting
     
     # select patches between the minimum and maximum surface areas
-    patch_larger_mini = ifel(patch_area < mini_area, NA, patch)
-    correct_size_patch = ifel(patch_area > maxi_area, NA, patch_larger_mini)
+    patchs_larger_mini = ifel(patch_area < mini_area, NA, patch)
+    correct_size_patchs = ifel(patch_area > maxi_area, NA, patchs_larger_mini)
     if (display == TRUE){ 
       x11() 
-      plot(correct_size_patch,col = COL,
+      plot(correct_size_patchs,col = COL,
            main = paste("Patches between mini_area and maxi_area - ",mini_area,"and",maxi_area,"m2"))
     }
-    # # Save as a new raster the set of patches of the correct size
-    writeRaster(x = correct_size_patch, filename = "patches_correct_size.tif",overwrite=TRUE)
+    # # Save the correct-sized patches as a new file
+    writeRaster(x = correct_size_patchs, filename = paste0("patches_correct_size_", Landscape,".tif"),overwrite=TRUE)
     
     
     ## C) Extract too-large patches, i.e patches that need cutting
     
     # Select patches over the maximum surface area
-    large_patch = ifel(patch_area < maxi_area, NA, patch)
+    large_patchs = ifel(patch_area < maxi_area, NA, patch)
     if (display == TRUE){
       x11() 
-      plot(large_patch,col = COL,
+      plot(large_patchs,col = COL,
            main = paste("Patches larger than maxi_area -",maxi_area,"m2"))
     }
     
-    # Save as a new raster the large patches that are too large and need to be cut
-    writeRaster(x = large_patch, filename = "patches_too_large.tif",overwrite=TRUE)
+    # Save the largest patches that need to be cut as a new file
+    writeRaster(x = large_patchs, filename = paste0("patches_too_large_", Landscape,".tif"),overwrite=TRUE)
     
   } else {
-      print("Your habitat layer raster does not have the right format. It has to be in binary format 0/1 (0=matrix ; 1=habitat)") # DEBUG HABITAT LAYER FORMAT
+      print("Your Habitat Layer raster does not have the right format. It has to be in binary format 0/1 (0=matrix ; 1=habitat)") # DEBUG HABITAT LAYER FORMAT
   }
 }
-
 
